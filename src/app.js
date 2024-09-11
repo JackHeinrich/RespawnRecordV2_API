@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(cors({ origin: "http://localhost:3000" }));
 
 // Route Definitions
-const idgbRoutes = require("./routes/igdbRoutes");
-const dynamoRoutes = require("./routes/dynamoRoutes");
+const idgbRoutes = require("./routes/igdb/index");
+const dynamoRoutes = require("./routes/dynamo/index");
 app.use("/api/igdb", idgbRoutes);
 app.use("/api/dynamo", dynamoRoutes);
 
