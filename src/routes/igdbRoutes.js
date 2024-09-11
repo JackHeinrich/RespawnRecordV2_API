@@ -86,14 +86,14 @@ router.get("/game_by_id", async (req, res) => {
 });
 
 // Define the GET route to fetch game by name and genre using query parameters
-router.get("/get_games_by_search", async (req, res) => {
+router.get("/get_games_by_query", async (req, res) => {
   try {
     const client = igdb(CLIENT_ID, IGDB_ACCESS_TOKEN);
 
     let { name, genre } = req.query;
 
     // Create a query to get all games with specified name or genre
-    const response = await client
+    const query = client
       .fields([
         "name",
         "cover.url",
@@ -104,10 +104,18 @@ router.get("/get_games_by_search", async (req, res) => {
       ])
       .limit(10)
       .offset(0)
-      .where("category = 0")
-      .where(genre ? `genres = (${genre})` : "")
-      .search(`${name ? name : ""}`)
-      .request("/games");
+      .where("category = 0");
+    if (name && name !== "any") {
+      query.search(`${name}`);
+    }
+
+    // Conditionally add the genre filter
+    if (genre && genre !== "any") {
+      query.where(`genres = (${genre})`); // Adjust based on API requirements
+      query.sort("total_rating_count", "desc");
+    }
+
+    const response = await query.request("/games");
 
     res.json(response.data);
   } catch (error) {

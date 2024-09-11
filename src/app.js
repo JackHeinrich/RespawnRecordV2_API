@@ -10,7 +10,9 @@ app.use(cors({ origin: "http://localhost:3000" }));
 
 // Route Definitions
 const idgbRoutes = require("./routes/igdbRoutes");
+const dynamoRoutes = require("./routes/dynamoRoutes");
 app.use("/api/igdb", idgbRoutes);
+app.use("/api/dynamo", dynamoRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
