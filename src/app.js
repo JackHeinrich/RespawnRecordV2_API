@@ -6,7 +6,7 @@ const cors = require("cors");
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://respawnrecordv2-frontend.onrender.com/",
+  "https://respawnrecordv2-frontend.onrender.com",
 ];
 
 // Middleware
