@@ -11,7 +11,9 @@ router.get("/", async (req, res) => {
   try {
     const client = igdb(CLIENT_ID, IGDB_ACCESS_TOKEN);
 
-    let { name, genre } = req.query;
+    let { name, genre, page } = req.query;
+
+    const offset = page * 12;
 
     // Create a query to get all games with specified name or genre
     const query = client
@@ -24,7 +26,7 @@ router.get("/", async (req, res) => {
         "summary",
       ])
       .limit(10)
-      .offset(0)
+      .offset(offset)
       .where("category = 0");
     if (name && name !== "any") {
       query.search(`${name}`);

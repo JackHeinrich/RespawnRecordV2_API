@@ -8,14 +8,13 @@ const AUTH_DOMAIN = process.env.AUTH0_DOMAIN;
 
 const getManagementAccessToken = require("./util/getManagementAccessToken");
 
-// Define the route to follow a user
-// Define the route to follow a user
+// Define the route to unfollow a user
 router.patch("/:userId/:followUserId", async (req, res) => {
   try {
-    const { userId, followUserId } = req.params; // Get userId and followUserId from route parameters
+    const { userId, followUserId } = req.params;
     const accessToken = await getManagementAccessToken();
 
-    // First, get the current user data to retrieve the existing followed_users
+    // Get the current user data to retrieve the existing followed_users
     const userResponse = await axios.get(
       `https://${AUTH_DOMAIN}/api/v2/users/${userId}`,
       {
@@ -28,10 +27,12 @@ router.patch("/:userId/:followUserId", async (req, res) => {
     const existingFollowedUsers =
       userResponse.data.user_metadata?.followed_users || [];
 
-    // Check if the user is already being followed
-    if (!existingFollowedUsers.includes(followUserId)) {
-      // Add the new followed userId
-      const updatedFollowedUsers = [...existingFollowedUsers, followUserId];
+    // Check if the user is being followed
+    if (existingFollowedUsers.includes(followUserId)) {
+      // Remove the followed userId from the array
+      const updatedFollowedUsers = existingFollowedUsers.filter(
+        (id) => id !== followUserId
+      );
 
       // Axios request configuration to update the user's metadata
       const options = {
@@ -43,7 +44,7 @@ router.patch("/:userId/:followUserId", async (req, res) => {
         },
         data: {
           user_metadata: {
-            followed_users: updatedFollowedUsers, // Use the updated array
+            followed_users: updatedFollowedUsers,
           },
         },
       };
@@ -52,20 +53,19 @@ router.patch("/:userId/:followUserId", async (req, res) => {
       const updateResponse = await axios(options);
 
       if (updateResponse.status === 200) {
-        return res.status(200).json({ message: "User followed successfully." });
+        return res
+          .status(200)
+          .json({ message: "User unfollowed successfully." });
       }
 
       return res
         .status(updateResponse.status)
         .json({ message: updateResponse.data.message });
     } else {
-      return res
-        .status(400)
-        .json({ message: "User is already being followed." });
+      return res.status(400).json({ message: "User is not being followed." });
     }
   } catch (error) {
-    console.error("Error following user:", error);
-    // Handle error from Axios, which may be in `error.response`
+    console.error("Error unfollowing user:", error);
     const errorMessage = error.response
       ? error.response.data.message
       : error.message;
