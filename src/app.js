@@ -4,9 +4,14 @@ const app = express();
 
 const cors = require("cors");
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://respawnrecordv2-frontend.onrender.com/",
+];
+
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: allowedOrigins }));
 
 // Route Definitions
 const idgbRoutes = require("./routes/igdb/index");
